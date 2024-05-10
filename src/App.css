@@ -392,6 +392,14 @@ body{
 
 /* phones */
 
+.form-check-input {
+  background-color: #6a81a2;
+}
+.form-check-input:checked {
+  background-color: #172a4a;
+  border-color: #172a4a;
+}
+
 /*// Small devices (landscape phones, 576px and up)*/
 @media (min-width: 576px) {
 

@@ -4,14 +4,6 @@ import axios from 'axios';
 
 // images
 import ownly from '../../img/ownly.webp';
-import isma from '../../img/team/isma.webp';
-import bernard from '../../img/team/bernard.webp';
-import rico from '../../img/team/rico.webp';
-import aldrick from '../../img/team/aldrick.webp';
-import cedric from '../../img/team/cedric.webp';
-import teamBG from '../../img/team/bg-1.webp';
-import ownChainBG from '../../img/ownchain/bg-1.webp';
-import arbitrum from '../../img/ownchain/arbitrum.webp';
 
 function Home(props) {
     const [inputsValues, setInputsValues] = useState({
@@ -86,7 +78,7 @@ function Home(props) {
 
     return (
         <div>
-            <div className="home background-image-cover" style={{"backgroundImage":"url('/img/hero/bg.webp')"}}>
+            <div className="home background-image-cover tw-bg-[top_right_-36em] sm:tw-bg-[top_right_-34em] md:tw-bg-[top_right_-22em] lg:tw-bg-[top_right_-10em] xl:!tw-bg-[top_right_0]" style={{"backgroundImage":"url('/img/hero/bg-2.webp')"}}>
                 <nav className={`navbar fixed-top navbar-expand-lg navbar-dark ${navbarHasBGColor || scrolled ? 'bg-color-1' : ''}`} style={{transition:'0.5s'}}>
                     <div className="container">
                         <a className="navbar-brand" href="#">
@@ -173,382 +165,51 @@ function Home(props) {
 
                 {/* Hero Section */}
                 <div className="container">
-                    <div className="row min-vh-100 align-items-center tw-pt-[10px]">
-                        <div className="col-md-10 col-lg-8 col-xl-7 col-xxl-6 py-5">
+                    <div className="row min-vh-100 align-items-center tw-pt-[15px]">
+                        <div className="col-md-10 col-lg-8 col-xl-7 col-xxl-7 py-5">
                             <div className="py-5">
-                                <h1 className="text-center text-md-start text-white font-size-190 font-size-240 font-size-sm-340 font-size-md-360 font-size-lg-380 font-size-xl-400 line-height-90 mb-4">OWNCHAIN<br/> NFT and Onchain<br/> Gaming Blockchain</h1>
-                                <p className="text-center text-md-start text-white font-size-130 font-size-sm-140 font-size-lg-170 line-height-100 mb-4 pb-2">Recreating a Transparent, Cheating-Free, and Fun Gaming Experience for Gamers with the Use of Immutable Smart Contracts, NFT, and Crypto Technology</p>
+                                <h1 className="text-center text-md-start text-white font-size-190 font-size-240 font-size-sm-340 font-size-md-360 font-size-lg-380 font-size-xl-400 line-height-90 mb-4">OWNCHAIN<br/> Node Key NFT Presale</h1>
 
-                                <div className="text-center text-md-start mb-3 tw-w-[initial]">
-                                    <a href="javascript:void(0);" className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular tw-w-[100%] sm:tw-w-[375px] px-5 py-3">
-                                        <div>Join Node Key NFT Presale</div>
-                                        <div className="tw-text-[0.66em]">Presale starts on May 25th, 11:00AM UTC</div>
-                                    </a>
-                                </div>
+                                <div className="row justify-content-center justify-content-md-start">
+                                    <div className="col-10">
+                                        <div className="font-size-90 tw-border-[#6a81a2] tw-border-solid tw-border-[4px] tw-rounded-[24px] px-4 py-3 mb-4">
+                                            <p className="text-white tw-leading-[18px] neo-bold mb-2">You are on the official OWNLY.io website.</p>
+                                            <p className="text-white tw-leading-[18px] neo-ultlight mb-0">Purchases from OWNCHAIN will only ever occur on <span className="neo-bold">nodes.ownly.io</span>.</p>
+                                            <p className="text-white tw-leading-[18px] neo-ultlight mb-0">Check that you are on <span className="neo-bold">nodes.ownly.io</span> whenever purchasing from OWNCHAIN.</p>
+                                        </div>
 
-                                <div className="mb-4 d-flex justify-content-center justify-content-md-start">
-                                    <a href="https://ownlyio.gitbook.io/ownly/ownchain/intro" target="_blank" rel="noreferrer" className="btn btn-custom-2 font-size-sm-120 tw-rounded-[15px] neo-regular tw-w-[100%] sm:tw-w-[375px] tw-h-[81.3px] d-flex justify-content-center align-items-center px-5 py-3">Learn More About OWNCHAIN</a>
-                                </div>
+                                        <ol className="font-size-80 mb-4">
+                                            <li className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-3 pb-1">
+                                                <p className="">Agree to Terms and Conditions</p>
 
-                                <p className="text-center text-md-start font-size-100 neo-ultlight text-white">Leveraging Arbitrum Orbit technology by Offchain Labs</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                                <div className="font-size-90">
+                                                    <div className="form-check">
+                                                        <input className="form-check-input tw-mt-[0px]" type="checkbox" value="" id="agreement" />
+                                                        <label className="form-check-label neo-ultlight" htmlFor="agreement">I agree with the <span className="neo-bold">OWNCHAIN Node Agreement</span>.</label>
+                                                    </div>
+                                                    <div className="form-check">
+                                                        <input className="form-check-input tw-mt-[0px]" type="checkbox" value="" id="nontransferable" />
+                                                        <label className="form-check-label neo-ultlight" htmlFor="nontransferable">I understand OWNCHAIN Node Keys are not <span className="neo-bold">transferable</span>.</label>
+                                                    </div>
+                                                    <div className="form-check">
+                                                        <input className="form-check-input tw-mt-[0px]" type="checkbox" value="" id="kyc" />
+                                                        <label className="form-check-label neo-ultlight" htmlFor="kyc">I understand that I cannot claim rewards until I pass KYC.<br/><span className="neo-bold">(SEE BLOCKED COUNTRIES)</span></label>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100">
+                                                <p className="">Connect Wallet and Mint</p>
+                                            </li>
+                                        </ol>
 
-            {/* Roadmap */}
-            <div className="position-relative py-5 overflow-hidden">
-                <div className="position-absolute tw-top-[-72px]" id="roadmap"></div>
-
-                <div className="container py-5">
-                    <h2 className="text-center font-size-210 font-size-sm-220 font-size-md-230 font-size-lg-240 font-size-xl-250 mb-5 pb-4 neo-regular">OwnChain Roadmap</h2>
-
-                    <div className="main-timeline">
-                        <div className="timeline d-md-flex align-items-md-center">
-                            <div className="icon"></div>
-
-                            <div className="date-content order-md-0 mt-0 mb-3 mb-md-0">
-                                <div className="date-outer position-relative">
-                                    <img src="/img/roadmap/own.webp" className="position-absolute tw-top-[4px] tw-left-[1px] tw-w-[102px] md:tw-w-[118px] tw-z-[2] rounded-circle tw-bg-[#1f3863]" alt="Ownly" />
-
-                                    <span className="date position-relative tw-z-[3] tw-top-[26px!important] md:tw-top-[30px!important] tw-left-[-2px!important]">
-                                        <span className="month rubik-medium text-white">2024</span>
-                                        <span className="year rubik-medium text-white">Q1</span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="timeline-content order-md-1">
-                                <h5 className="neo-regular font-size-130 font-size-sm-140 font-size-lg-170 mb-4">Platform Selection and Testnet Launch</h5>
-
-                                <ul className="fa-ul font-size-110 font-size-lg-120 text-start text-md-start">
-                                    <li className="mb-2">
-                                        <span className="fa-li tw-pt-[4px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                        Conduct thorough research on OwnChain with Arbitrum Orbit Chain.
-                                    </li>
-
-                                    <li>
-                                        <span className="fa-li tw-pt-[4px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                        Initiate testnet launch to assess functionality and performance.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="timeline d-md-flex align-items-md-center">
-                            <div className="icon"></div>
-
-                            <div className="date-content order-md-1 mt-0 mb-3 mb-md-0">
-                                <div className="date-outer position-relative">
-                                    <img src="/img/roadmap/own.webp" className="position-absolute tw-top-[4px] tw-left-[1px] tw-w-[102px] md:tw-w-[118px] tw-z-[2] rounded-circle tw-bg-[#1f3863]" alt="Ownly" />
-
-                                    <span className="date position-relative tw-z-[3] tw-top-[26px!important] md:tw-top-[30px!important] tw-left-[-2px!important]">
-                                        <span className="month rubik-medium text-white">2024</span>
-                                        <span className="year rubik-medium text-white">Q2</span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="timeline-content order-md-0">
-                                <h5 className="neo-regular font-size-130 font-size-sm-140 font-size-lg-170 mb-4">Mainnet Launch and Token Migration</h5>
-
-                                <ul className="fa-ul font-size-110 font-size-lg-120 text-start text-md-end md:tw-ms-[0] md:tw-me-[44px]">
-                                    <li className="mb-2">
-                                        Officially launch OwnChain's mainnet.
-                                        <span className="fa-li md:tw-pt-[4px] md:tw-left-[initial] md:tw-right-[-50px] tw-top-[2px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                    </li>
-
-                                    <li className="mb-2">
-                                        Execute the migration process for OWN tokens, integrating them as gas within the OwnChain ecosystem.
-                                        <span className="fa-li md:tw-pt-[4px] md:tw-left-[initial] md:tw-right-[-50px] tw-top-[2px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                    </li>
-
-                                    <li className="mb-2">
-                                        Conduct a snapshot and airdrop campaign to distribute OWN tokens to existing addresses on OwnChain.
-                                        <span className="fa-li md:tw-pt-[4px] md:tw-left-[initial] md:tw-right-[-50px] tw-top-[2px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                    </li>
-
-                                    <li>
-                                        Introduce a simple decentralized exchange (DEX) for trading activities.
-                                        <span className="fa-li md:tw-pt-[4px] md:tw-left-[initial] md:tw-right-[-50px] tw-top-[2px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="timeline d-md-flex align-items-md-center">
-                            <div className="icon"></div>
-
-                            <div className="date-content order-md-1 mt-0 mb-3 mb-md-0">
-                                <div className="date-outer position-relative">
-                                    <img src="/img/roadmap/own.webp" className="position-absolute tw-top-[4px] tw-left-[1px] tw-w-[102px] md:tw-w-[118px] tw-z-[2] rounded-circle tw-bg-[#1f3863]" alt="Ownly" />
-
-                                    <span className="date position-relative tw-z-[3] tw-top-[26px!important] md:tw-top-[30px!important] tw-left-[-2px!important]">
-                                        <span className="month rubik-medium text-white">2024</span>
-                                        <span className="year rubik-medium text-white">Q3</span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="timeline-content order-md-1">
-                                <h5 className="neo-regular font-size-130 font-size-sm-140 font-size-lg-170 mb-4">Growth and Expansion</h5>
-
-                                <ul className="fa-ul font-size-110 font-size-lg-120 text-start text-md-start">
-                                    <li className="mb-2">
-                                        <span className="fa-li tw-pt-[4px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                        Enhance liquidity options for trading OWN tokens.
-                                    </li>
-
-                                    <li className="mb-2">
-                                        <span className="fa-li tw-pt-[4px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                        Pursue listings on centralized exchanges (CEX), aiming for at least one major exchange.
-                                    </li>
-
-                                    <li className="mb-2">
-                                        <span className="fa-li tw-pt-[4px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                        Explore opportunities for venture capital (VC) funding to support project development.
-                                    </li>
-
-                                    <li>
-                                        <span className="fa-li tw-pt-[4px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                        Evaluate the feasibility of migrating NFT collections to the OwnChain platform.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="timeline d-md-flex align-items-md-center">
-                            <div className="icon"></div>
-                            <div className="date-content order-md-1 mt-0 mb-3 mb-md-0">
-                                <div className="date-outer position-relative">
-                                    <img src="/img/roadmap/own.webp" className="position-absolute tw-top-[4px] tw-left-[1px] tw-w-[102px] md:tw-w-[118px] tw-z-[2] rounded-circle tw-bg-[#1f3863]" alt="Ownly" />
-
-                                    <span className="date position-relative tw-z-[3] tw-top-[26px!important] md:tw-top-[30px!important] tw-left-[-2px!important]">
-                                        <span className="month rubik-medium text-white">2024</span>
-                                        <span className="year rubik-medium text-white">Q4</span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="timeline-content order-md-0">
-                                <h5 className="neo-regular font-size-130 font-size-sm-140 font-size-lg-170 mb-4">Diversification and Sustainability</h5>
-
-                                <ul className="fa-ul font-size-110 font-size-lg-120 text-start text-md-end md:tw-ms-[0] md:tw-me-[44px]">
-                                    <li className="mb-2">
-                                        Launch #project-tong-its, a strategic initiative aimed at further enriching the OwnChain ecosystem.
-                                        <span className="fa-li md:tw-pt-[4px] md:tw-left-[initial] md:tw-right-[-50px] tw-top-[2px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                    </li>
-
-                                    <li className="mb-2">
-                                        Strategize and execute revenue-generating activities to ensure sustainable growth.
-                                        <span className="fa-li md:tw-pt-[4px] md:tw-left-[initial] md:tw-right-[-50px] tw-top-[2px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                    </li>
-
-                                    <li>
-                                        Continuously monitor and adapt strategies to optimize project success.
-                                        <span className="fa-li md:tw-pt-[4px] md:tw-left-[initial] md:tw-right-[-50px] tw-top-[2px]">
-                                            <img src="/img/roadmap/own.webp" className="tw-w-[20px]" alt="Ownly" />
-                                        </span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Team */}
-            <div className="background-image-cover position-relative pt-5 pb-4 overflow-hidden" style={{backgroundImage:"url('" + teamBG + "')"}}>
-                <div className="position-absolute tw-top-[-72px]" id="team"></div>
-
-                <div className="container pt-5">
-                    <h2 className="neo-regular text-center text-white font-size-210 font-size-sm-220 font-size-md-230 font-size-lg-240 font-size-xl-250 mb-5 pb-4">Meet Our Team</h2>
-
-                    <div className="row justify-content-center">
-                        <div className="col-10 col-sm-12 col-xl-11 col-xxl-10">
-                            <div className="row justify-content-center">
-                                <div className="col-sm-6 col-md-4 px-3 px-md-4 px-lg-5 mb-5 pb-4">
-                                    <a href="https://www.linkedin.com/in/ismaeljerusalem" target="_blank" rel="noreferrer" className="text-decoration-none">
-                                        <div className="rounded-circle tw-border-[2px] tw-border-[#ffffff] w-100 tw-pt-[100%] background-image-cover mb-4" style={{backgroundImage:"url('" + isma + "')"}}></div>
-
-                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-center neo-bold mb-2">Ismael<br className="d-none d-lg-block d-xl-none"></br> Jerusalem</p>
-                                        <p className="font-size-110 font-size-lg-120 text-white text-center neo-regular">Chief Executive Officer</p>
-                                    </a>
-                                </div>
-
-                                <div className="col-sm-6 col-md-4 px-3 px-md-4 px-lg-5 mb-5 pb-4">
-                                    <a href="https://www.linkedin.com/in/bernhistorillo" target="_blank" rel="noreferrer" className="text-decoration-none">
-                                        <div className="rounded-circle tw-border-[2px] tw-border-[#ffffff] w-100 tw-pt-[100%] background-image-cover mb-4" style={{backgroundImage:"url('" + bernard + "')"}}></div>
-
-                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-center neo-bold mb-2">Bernard<br className="d-none d-lg-block d-xl-none"></br> Historillo</p>
-                                        <p className="font-size-110 font-size-lg-120 text-white text-center neo-regular">Chief Technology Officer</p>
-                                    </a>
-                                </div>
-
-                                <div className="col-md-4 px-4 px-lg-5 mb-5 pb-4">
-                                    <a href="https://www.linkedin.com/in/ricoz" target="_blank" rel="noreferrer" className="text-decoration-none">
-                                        <div className="rounded-circle tw-border-[2px] tw-border-[#ffffff] w-100 tw-pt-[100%] background-image-cover mb-4" style={{backgroundImage:"url('" + rico + "')"}}></div>
-
-                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-center neo-bold mb-2">Rico<br className="d-none d-lg-block d-xl-none"></br> Zuñiga</p>
-                                        <p className="font-size-110 font-size-lg-120 text-white text-center neo-regular">Technical Advisor</p>
-                                    </a>
-                                </div>
-
-                                <div className="col-md-4 px-4 px-lg-5 mb-5 pb-4">
-                                    <a href="https://www.linkedin.com/in/aldrickb" target="_blank" rel="noreferrer" className="text-decoration-none">
-                                        <div className="rounded-circle tw-border-[2px] tw-border-[#ffffff] w-100 tw-pt-[100%] background-image-cover mb-4" style={{backgroundImage:"url('" + aldrick + "')"}}></div>
-
-                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-center neo-bold mb-2">Aldrick<br className="d-none d-lg-block d-xl-none"></br> Bonaobra</p>
-                                        <p className="font-size-110 font-size-lg-120 text-white text-center neo-regular">Blockchain Consultant</p>
-                                    </a>
-                                </div>
-
-                                <div className="col-md-4 px-4 px-lg-5 mb-5 pb-4">
-                                    <div className="rounded-circle tw-border-[2px] tw-border-[#ffffff] w-100 tw-pt-[100%] background-image-cover mb-4" style={{backgroundImage:"url('" + cedric + "')"}}></div>
-
-                                    <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-center neo-bold mb-2">Cedric<br className="d-none d-lg-block d-xl-none"></br> Naño</p>
-                                    <p className="font-size-110 font-size-lg-120 text-white text-center neo-regular">Full Stack Developer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* OwnChain */}
-            <div className="position-relative background-image-cover" style={{backgroundImage:"url('" + ownChainBG + "')"}}>
-                <div className="position-absolute tw-top-[-72px]" id="ownchain"></div>
-
-                <div className="container">
-                    <div className="row justify-content-end align-items-center tw-min-h-[calc(100vh-71.6px)]">
-                        <div className="col-md-12 col-lg-9 col-xl-8 col-xxl-10 py-5">
-                            <div className="text-center text-md-end pt-4 pb-5 py-sm-5">
-                                <p className="neo-regular text-white font-size-210 font-size-sm-220 font-size-md-230 font-size-lg-240 font-size-xl-250 line-height-sm-130 line-height-md-100 px-4 px-md-0 mb-5">Empowering the Future of Blockchain with OwnChain</p>
-                                <p className="text-white font-size-110 font-size-lg-120 px-4 px-md-0 mb-5">OWNCHAIN is redefining the intersection of blockchain gaming and NFTs, enabling millions of gamers to effortlessly engage in the open trade of in-game items and digital assets without the complexity of crypto wallets. This groundbreaking platform, developed by Ownly, is rooted in a philosophy of seamless integration, allowing traditional and blockchain gamers to navigate the digital economy with ease. By eliminating the barriers to entry, OWNCHAIN ensures that every player can fully participate in the value creation and trading processes that define the new era of gaming.</p>
-
-                                <div className="text-center text-md-end">
-                                    <a href="javascript:void(0);" className="btn btn-custom-1 font-size-100 font-size-sm-120 neo-regular px-5 py-3">
-                                        <div>Join Node Key NFT Presale</div>
-                                        <div className="tw-text-[0.66em]">Presale starts on May 25th, 11:00AM UTC</div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* OwnChain Features */}
-            <div className="container py-5">
-                <div className="row justify-content-center pt-5">
-                    <h2 className="neo-regular text-center font-size-210 font-size-sm-220 font-size-md-230 font-size-lg-240 font-size-xl-250 mb-5">Ownchain Core Technology</h2>
-                    <p className="font-size-110 font-size-lg-120 text-center text-center mb-5 pb-3">OWNCHAIN is built on the Nitro framework, derived from Arbitrum, enhancing blockchain gaming and NFT transactions with efficient and secure operations.</p>
-
-                    <div className="row justify-content-center align-items-stretch">
-                        <div className="col-md-6 col-lg-3 px-2 mb-5">
-                            <div className="card h-100 tw-rounded-[20px] tw-bg-transparent tw-border-[rgb(23,42,74,0.5)] tw-border-[2px]">
-                                <div className="card-body">
-                                    <div className="p-5 mb-4 tw-border-[rgb(34,34,34,0.1)] tw-border-solid tw-rounded-[20px] tw-border-[1px]" style={{background:'linear-gradient(220deg, rgba(23,42,74,1) 25%, rgba(23,42,74,0.7) 100%)'}}>
-                                        <img src="/img/ownchain/consensus.webp" className="w-100" alt="OwnChain" />
-                                    </div>
-
-                                    <p className="font-size-110 font-size-lg-120 text-center neo-bold text-center mb-3">OWNCHAIN<br/> Data Consensus</p>
-                                    <p className="font-size-110 font-size-lg-120 text-center text-center mb-0">OWNCHAIN employs the Anytrust protocol, managing data availability through selected entities. This ensures optimized transaction costs while maintaining security.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-md-6 col-lg-3 px-2 mb-5">
-                            <div className="card h-100 tw-rounded-[20px] tw-bg-transparent tw-border-[rgb(23,42,74,0.5)] tw-border-[2px]">
-                                <div className="card-body">
-                                    <div className="p-5 mb-4 tw-border-[rgb(23,42,74,0.5)] tw-border-solid tw-rounded-[20px] tw-border-[1px]" style={{background:'linear-gradient(220deg, rgba(23,42,74,1) 25%, rgba(23,42,74,0.7) 100%)'}}>
-                                        <img src="/img/ownchain/layers.webp" className="w-100" alt="OwnChain" />
-                                    </div>
-
-                                    <p className="font-size-110 font-size-lg-120 text-center neo-bold text-center mb-3">OWNCHAIN<br/> Layers</p>
-                                    <p className="font-size-110 font-size-lg-120 text-center text-center mb-0">OWNCHAIN comprises two layers: the Essential Layer for cost-effectiveness and the Sovereign Layer for enhanced security. Both integrate seamlessly to ensure optimal performance.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-md-6 col-lg-3 px-2 mb-5">
-                            <div className="card h-100 tw-rounded-[20px] tw-bg-transparent tw-border-[rgb(23,42,74,0.5)] tw-border-[2px]">
-                                <div className="card-body">
-                                    <div className="p-5 mb-4 tw-border-[rgb(34,34,34,0.1)] tw-border-solid tw-rounded-[20px] tw-border-[1px]" style={{background:'linear-gradient(220deg, rgba(23,42,74,1) 25%, rgba(23,42,74,0.7) 100%)'}}>
-                                        <img src="/img/ownchain/orbiting.webp" className="w-100" alt="OwnChain" />
-                                    </div>
-
-                                    <p className="font-size-110 font-size-lg-120 text-center neo-bold text-center mb-3">Orbiting<br/> OWNCHAIN</p>
-                                    <p className="font-size-110 font-size-lg-120 text-center text-center mb-0">Building on Arbitrum Orbit, OWNCHAIN enables independent Rollup and AnyTrust chains. These tailored solutions cater specifically to gaming and NFT sectors.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-md-6 col-lg-3 px-2 mb-5">
-                            <div className="card h-100 tw-rounded-[20px] tw-bg-transparent tw-border-[rgb(23,42,74,0.5)] tw-border-[2px]">
-                                <div className="card-body">
-                                    <div className="p-5 mb-4 tw-border-[rgb(34,34,34,0.1)] tw-border-solid tw-rounded-[20px] tw-border-[1px]" style={{background:'linear-gradient(220deg, rgba(23,42,74,1) 25%, rgba(23,42,74,0.7) 100%)'}}>
-                                        <img src="/img/ownchain/support.webp" className="w-100" alt="OwnChain" />
-                                    </div>
-
-                                    <p className="font-size-110 font-size-lg-120 text-center neo-bold text-center mb-3">OWNCHAIN<br/> Ecosystem and Support</p>
-                                    <p className="font-size-110 font-size-lg-120 text-center text-center mb-0">Supported directly by Ownly, OWNCHAIN benefits from the Anytrust model for operational speed and reduced costs. Close collaboration ensures rapid evolution and strong support for developers and users alike.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* OwnChain Architecture */}
-            <div className="container-fluid">
-                <div className="row tw-min-h-[calc(100vh-78px)] align-items-stretch">
-                    <div className="col-lg-7 bg-color-1 d-flex justify-content-end">
-                        <div className="lg:tw-max-w-[calc((960px/12)*7)] xl:tw-max-w-[calc((1140px/12)*7)] xxl:tw-max-w-[calc((1320px/12)*7)] w-100 tw-px-[8px]">
-                            <div className="h-100 d-flex align-items-center">
-                                <div className="py-5 pe-md-5 text-center text-md-start">
-                                    <div className="py-5">
-                                        <p className="neo-regular text-white font-size-210 font-size-sm-220 font-size-md-230 font-size-lg-240 font-size-xl-250 line-height-sm-130 line-height-md-100 mb-5">OwnChain's Blueprint: Unleashing Blockchain Potential</p>
-                                        <p className="text-white font-size-110 font-size-lg-120 px-4 px-md-0 mb-5">OwnChain's architecture is built upon Arbitrum's Layer 2 scaling technology, which optimizes transaction throughput and minimizes costs while maintaining Ethereum's security guarantees. By utilizing a combination of rollups and off-chain computation, OwnChain achieves a balance between scalability and decentralization, enabling fast and cost-effective transactions without sacrificing security.</p>
-
-                                        <div className="text-center text-md-start">
-                                            <a href="javascript:void(0);" className="btn btn-custom-1 font-size-100 font-size-sm-120 neo-regular px-5 py-3">
-                                                <div>Join Node Key NFT Presale</div>
-                                                <div className="tw-text-[0.66em]">Presale starts on May 25th, 11:00AM UTC</div>
-                                            </a>
+                                        <div className="text-center text-md-start mb-3 ">
+                                            <a href="javascript:void(0);" className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular tw-w-[100%] md:tw-w-[initial] px-5 py-3">Connect Wallet and Sign In</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div className="col-lg-5 background-image-cover p-0 tw-min-h-[calc(100vh-78px)] lg:tw-min-h-[initial]" style={{backgroundImage:"url('" + arbitrum + "')"}}></div>
                 </div>
             </div>
 
