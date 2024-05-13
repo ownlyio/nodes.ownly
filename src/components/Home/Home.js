@@ -29,7 +29,7 @@ function Home({connectWallet, address}) {
                                 <h1 className="text-center text-md-start text-white font-size-190 font-size-240 font-size-sm-340 font-size-md-360 font-size-lg-380 font-size-xl-400 line-height-90 mb-4">OWNCHAIN<br/> Node Key NFT Presale</h1>
 
                                 <div className="row justify-content-center justify-content-md-start">
-                                    <div className="col-10">
+                                    <div className="col-md-10">
                                         <form onSubmit={handleSubmit}>
                                             <div className="font-size-90 tw-border-[#6a81a2] tw-border-solid tw-border-[4px] tw-rounded-[24px] px-4 py-3 mb-4">
                                                 <p className="text-white tw-leading-[18px] neo-bold mb-2">You are on the official OWNLY.io website.</p>
