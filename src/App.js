@@ -9,6 +9,8 @@ import Footer from "./components/Footer/Footer";
 import {useEffect, useState} from "react";
 import {Modal} from "react-bootstrap";
 import { ethers } from 'ethers';
+import BigNumber from 'bignumber.js';
+
 
 function App() {
     const [inputsValues, setInputsValues] = useState({
@@ -32,12 +34,17 @@ function App() {
                 content = error.response.data.message;
             }
         }
+        else {
+            content = error.info.error.message
+        }
 
         setInputsValues({ ...inputsValues, showModalError: true, modalErrorMessage: content });
     };
 
-    const correctNetworkId = 56; // 56 or 97
+    const correctNetworkId = 421614; // 56 or 97
     const [address, setAddress] = useState(null);
+    const [nodeKeyBalance, setNodeKeyBalance] = useState(0);
+    const [mintLoadingMessage, setMintLoadingMessage] = useState('');
 
     let connectWallet = async function() {
         await checkNetwork();
@@ -53,6 +60,33 @@ function App() {
 
                 if (accounts && accounts.length > 0) {
                     setAddress(accounts[0]);
+
+                    const abi = [{
+                        "inputs":[
+                            {
+                                "internalType":"address",
+                                "name":"buyer",
+                                "type":"address"
+                            }
+                        ],
+                        "name":"getPurchasedKeys",
+                        "outputs":[
+                            {
+                                "internalType":"uint256",
+                                "name":"",
+                                "type":"uint256"
+                            }
+                        ],
+                        "stateMutability":"view",
+                        "type":"function"
+                    }];
+
+
+                    const provider = new ethers.BrowserProvider(window.ethereum)
+                    const contract = new ethers.Contract("0xca31cb3bd5eb3e6466cd4ed04950346200e1ed6b", abi, provider);
+
+                    const data = await contract.getPurchasedKeys(accounts[0]);
+                    setNodeKeyBalance(parseInt(data.toString()));
                 }
             } else {
                 setInputsValues({ ...inputsValues, showModalError: true, modalErrorMessage: 'MetaMask not installed.<br/> Please install MetaMask from <a href=\'https://metamask.io\' class=\'text-color-2\'>https://metamask.io</a> to proceed.' });
@@ -84,6 +118,65 @@ function App() {
         } catch (error) {
             console.error('Error switching network:', error.message);
             // Handle the error, for example, show a message to the user
+        }
+    };
+
+    const sendMintTransaction = async (amount) => {
+        setMintLoadingMessage('Purchasing node key...');
+        const abi = [{
+            "inputs":[
+                {
+                    "internalType":"uint256",
+                    "name":"amount",
+                    "type":"uint256"
+                }
+            ],
+            "name":"buyNodeKey",
+            "outputs":[
+                
+            ],
+            "stateMutability":"payable",
+            "type":"function"
+        }];
+        
+        /*
+        const abi = [{
+            "inputs":[
+                {
+                    "internalType":"uint256",
+                    "name":"amount",
+                    "type":"uint256"
+                },
+                {
+                    "internalType":"string",
+                    "name":"voucher",
+                    "type":"string"
+                }
+            ],
+            "name":"buyNodeKey",
+            "outputs":[
+                
+            ],
+            "stateMutability":"payable",
+            "type":"function"
+        }]
+        */
+        
+        try {
+            const provider = new ethers.BrowserProvider(window.ethereum)
+            const signer = await provider.getSigner();
+            const contract = new ethers.Contract("0xca31cb3bd5eb3e6466cd4ed04950346200e1ed6b", abi, signer );
+
+            let value = new BigNumber("50000000000000000").multipliedBy(amount);
+            const tx = await contract.buyNodeKey(amount.toString(), { value: value.toString() });
+
+            await tx.wait();
+
+            setInputsValues({ ...inputsValues, showModalSuccess: true, modalSuccessMessage: 'Minted successfully!' });
+            setMintLoadingMessage('');
+        } catch (error) {
+            setMintLoadingMessage('');
+            showRequestError(error);
         }
     };
 
@@ -123,6 +216,9 @@ function App() {
                     <Route exact path="/mint-node-key-nft" render={
                         (props) =>
                             <MintNodeKeyNFT {...props}
+                                nodeKeyBalance={nodeKeyBalance}
+                                mintLoadingMessage={mintLoadingMessage}
+                                sendMintTransaction={sendMintTransaction}
                                 showRequestError={showRequestError}
                                 address={address}
                             />

@@ -6,7 +6,7 @@ import {useHistory} from "react-router-dom";
 
 // images
 
-function MintNodeKeyNFT({showRequestError, address}) {
+function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, sendMintTransaction, showRequestError, address}) {
     const price = 0.05;
     const [mintQuantity, setMintQuantity] = useState(new BigNumber(1));
     const history = useHistory();
@@ -115,7 +115,15 @@ function MintNodeKeyNFT({showRequestError, address}) {
                                     </div>
 
                                     <div className="text-center text-md-start mb-3 ">
-                                        <a href="javascript:void(0);" className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Mint { mintQuantity.toString() } Node Key NFT</a>
+                                        {
+                                            (mintLoadingMessage != '') ?
+                                                <a className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Blah blah blahs</a>
+                                                :
+                                            (nodeKeyBalance == 0) ? 
+                                                <a onClick={() => sendMintTransaction(mintQuantity)} className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Mint { mintQuantity.toString() } Node Key NFT</a>
+                                            : 
+                                                <a className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">You already have { nodeKeyBalance.toString() } Node Key NFT</a>
+                                        }
                                     </div>
 
                                     <div className="tw-text-[0.8em]">
