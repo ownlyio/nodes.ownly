@@ -10,7 +10,7 @@ import {useEffect, useState} from "react";
 import {Modal} from "react-bootstrap";
 import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
-
+import axios from 'axios';
 
 function App() {
     const [inputsValues, setInputsValues] = useState({
@@ -41,10 +41,12 @@ function App() {
         setInputsValues({ ...inputsValues, showModalError: true, modalErrorMessage: content });
     };
 
-    const correctNetworkId = 421614; // 56 or 97
+    const correctNetworkId = parseInt(process.env.REACT_APP_CHAIN_ID); // 56 or 97
     const [address, setAddress] = useState(null);
     const [nodeKeyBalance, setNodeKeyBalance] = useState(0);
     const [mintLoadingMessage, setMintLoadingMessage] = useState('');
+    const [preSaleTxnHash, setPreSaleTxnHash] = useState('');
+    const [testnetNodeKeyTxnHash, setTestnetNodeKeyTxnHash] = useState('');
 
     let connectWallet = async function() {
         await checkNetwork();
@@ -60,39 +62,45 @@ function App() {
 
                 if (accounts && accounts.length > 0) {
                     setAddress(accounts[0]);
-
-                    const abi = [{
-                        "inputs":[
-                            {
-                                "internalType":"address",
-                                "name":"buyer",
-                                "type":"address"
-                            }
-                        ],
-                        "name":"getPurchasedKeys",
-                        "outputs":[
-                            {
-                                "internalType":"uint256",
-                                "name":"",
-                                "type":"uint256"
-                            }
-                        ],
-                        "stateMutability":"view",
-                        "type":"function"
-                    }];
-
-
-                    const provider = new ethers.BrowserProvider(window.ethereum)
-                    const contract = new ethers.Contract("0xca31cb3bd5eb3e6466cd4ed04950346200e1ed6b", abi, provider);
-
-                    const data = await contract.getPurchasedKeys(accounts[0]);
-                    setNodeKeyBalance(parseInt(data.toString()));
+                    checkPurchaseBalance(accounts[0]);
                 }
             } else {
                 setInputsValues({ ...inputsValues, showModalError: true, modalErrorMessage: 'MetaMask not installed.<br/> Please install MetaMask from <a href=\'https://metamask.io\' class=\'text-color-2\'>https://metamask.io</a> to proceed.' });
             }
         } catch (error) {
             showRequestError(error);
+        }
+    };
+
+    const checkPurchaseBalance = async (address, refreshTxnHash = true) => {
+        const abi = [{
+            "inputs":[
+                {
+                    "internalType":"address",
+                    "name":"buyer",
+                    "type":"address"
+                }
+            ],
+            "name":"getPurchasedKeys",
+            "outputs":[
+                {
+                    "internalType":"uint256",
+                    "name":"",
+                    "type":"uint256"
+                }
+            ],
+            "stateMutability":"view",
+            "type":"function"
+        }];
+
+        const provider = new ethers.BrowserProvider(window.ethereum)
+        const contract = new ethers.Contract("0xca31cb3bd5eb3e6466cd4ed04950346200e1ed6b", abi, provider);
+
+        const data = await contract.getPurchasedKeys(address);
+        setNodeKeyBalance(parseInt(data.toString()));
+        if (refreshTxnHash){
+            setPreSaleTxnHash('');
+            setTestnetNodeKeyTxnHash('');
         }
     };
 
@@ -122,7 +130,7 @@ function App() {
     };
 
     const sendMintTransaction = async (amount) => {
-        setMintLoadingMessage('Purchasing node key...');
+        setMintLoadingMessage('Approve transaction from your wallet...');
         const abi = [{
             "inputs":[
                 {
@@ -165,15 +173,29 @@ function App() {
         try {
             const provider = new ethers.BrowserProvider(window.ethereum)
             const signer = await provider.getSigner();
-            const contract = new ethers.Contract("0xca31cb3bd5eb3e6466cd4ed04950346200e1ed6b", abi, signer );
+            const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, signer );
 
-            let value = new BigNumber("50000000000000000").multipliedBy(amount);
+            let value = new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE.toString()).multipliedBy(new BigNumber("10").pow(new BigNumber(18))).multipliedBy(amount);
             const tx = await contract.buyNodeKey(amount.toString(), { value: value.toString() });
 
+            setMintLoadingMessage('Purchasing key...');
             await tx.wait();
+            setPreSaleTxnHash(tx.hash);
+            
+            setMintLoadingMessage('Minting NodeKey on testnet...');
+            
+            // call POST api town-faucet-backend.vercel.app with x-api-key header
+            let apiData
+            apiData = await axios.post(process.env.REACT_APP_API_URL + address, {}, {
+                headers: {
+                  'x-api-key': process.env.REACT_APP_API_SECRET_KEY
+                }
+            });
 
-            setInputsValues({ ...inputsValues, showModalSuccess: true, modalSuccessMessage: 'Minted successfully!' });
+            setInputsValues({ ...inputsValues, showModalSuccess: true, modalSuccessMessage: 'Purchase of presale key and mint of testnet key successfully! Please take note of your transaction receipt after closing this message'});
+            setTestnetNodeKeyTxnHash(apiData.data.txnHash);
             setMintLoadingMessage('');
+            checkPurchaseBalance(address, false);
         } catch (error) {
             setMintLoadingMessage('');
             showRequestError(error);
@@ -183,6 +205,7 @@ function App() {
     useEffect(() => {
         const handleAccountsChanged = (accounts) => {
             setAddress(accounts[0]);
+            checkPurchaseBalance(accounts[0]);
         };
 
         if (window.ethereum) {
@@ -218,6 +241,8 @@ function App() {
                             <MintNodeKeyNFT {...props}
                                 nodeKeyBalance={nodeKeyBalance}
                                 mintLoadingMessage={mintLoadingMessage}
+                                preSaleTxnHash={preSaleTxnHash}
+                                testnetNodeKeyTxnHash={testnetNodeKeyTxnHash}
                                 sendMintTransaction={sendMintTransaction}
                                 showRequestError={showRequestError}
                                 address={address}

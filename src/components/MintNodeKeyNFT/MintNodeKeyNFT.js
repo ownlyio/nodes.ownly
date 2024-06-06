@@ -6,7 +6,7 @@ import {useHistory} from "react-router-dom";
 
 // images
 
-function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, sendMintTransaction, showRequestError, address}) {
+function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, testnetNodeKeyTxnHash, sendMintTransaction, showRequestError, address}) {
     const price = 0.05;
     const [mintQuantity, setMintQuantity] = useState(new BigNumber(1));
     const history = useHistory();
@@ -79,7 +79,7 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, sendMintTransaction
 
                                         <div>
                                             <div className="tw-text-[0.78em]">
-                                                <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ (mintQuantity.multipliedBy(0.05)).toString() } ETH</p>
+                                                <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ (mintQuantity.multipliedBy(new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE.toString()))).toString() } ETH</p>
                                             </div>
                                         </div>
                                     </div>
@@ -103,21 +103,31 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, sendMintTransaction
 
                                         <div>
                                             <div className="tw-text-[0.78em]">
-                                                <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ (mintQuantity.multipliedBy(0.05)).toString() } ETH</p>
+                                                <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ (mintQuantity.multipliedBy(new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE.toString()))).toString() } ETH</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="font-size-90 tw-border-[#6a81a2] tw-border-solid tw-border-[4px] tw-rounded-[24px] px-4 py-3 mb-4">
                                         <div className="tw-text-[0.78em]">
-                                            <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0">Minting Address: { address }</p>
+                                            {
+                                                (testnetNodeKeyTxnHash != '' && testnetNodeKeyTxnHash != '') ?
+                                                    <>
+                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0">Please take note of your transaction receipt before leaving the page:</p>
+                                                        <br />
+                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Presale purchase transaction</b>: {process.env.REACT_APP_MAIN_EXPLORER_URL}tx/{ preSaleTxnHash }</p>
+                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Testnet Nodekey mint transaction</b>: {process.env.REACT_APP_ARB_SEPOLIA_EXPLORER_URL}tx/{ testnetNodeKeyTxnHash }</p>
+                                                    </>
+                                                :
+                                                    <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0">Minting Address: { address }</p>
+                                            }
                                         </div>
                                     </div>
 
                                     <div className="text-center text-md-start mb-3 ">
                                         {
                                             (mintLoadingMessage != '') ?
-                                                <a className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Blah blah blahs</a>
+                                                <a className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">{mintLoadingMessage}</a>
                                                 :
                                             (nodeKeyBalance == 0) ? 
                                                 <a onClick={() => sendMintTransaction(mintQuantity)} className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Mint { mintQuantity.toString() } Node Key NFT</a>
