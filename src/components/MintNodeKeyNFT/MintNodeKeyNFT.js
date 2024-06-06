@@ -2,14 +2,38 @@ import { Modal } from 'react-bootstrap'
 import {useEffect, useState} from "react";
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
-import {useHistory} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 
 // images
 
-function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, testnetNodeKeyTxnHash, sendMintTransaction, showRequestError, address}) {
-    const price = 0.05;
+function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, testnetNodeKeyTxnHash, sendMintTransaction, checkVoucherCode, showRequestError, address}) {
+    const price = new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE);
+    const ONE_ETHER = new BigNumber(10 ** 18);
     const [mintQuantity, setMintQuantity] = useState(new BigNumber(1));
     const history = useHistory();
+    const [showPromoField, setShowPromoField] = useState(false);
+    const [isPromoFieldDisabled, setIsPromoFieldDisabled] = useState(false);
+    const [showPromoFieldMessage, setShowPromoFieldMessage] = useState('');
+    const [isPromoMessageError, setIsPromoMessageError] = useState(false);
+    const [promoCode, setPromoCode] = useState('');
+    const [discount, setDiscount] = useState(new BigNumber(0));
+
+    // Get the location object from React Router
+    const location = useLocation();
+    
+    // Create a URLSearchParams instance from the location's search string
+    const queryParams = new URLSearchParams(location.search);
+    
+    // Get the value of the 'code' query parameter
+    const code = queryParams.get('code');
+    
+    useEffect(async () => {
+        if (code) {
+            setShowPromoField(true);
+            setPromoCode(code);
+            enterVoucherCode({}, code);
+        }
+    }, [code]);
 
     const decrement = () => {
         if(mintQuantity > 1) {
@@ -19,6 +43,34 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
 
     const increment = () => {
         setMintQuantity(mintQuantity.plus(new BigNumber(1)));
+    }
+
+    const enterVoucherCode = async (e, bypass = '') => {
+        setIsPromoMessageError(false);
+        setShowPromoFieldMessage("");
+
+        if (e.key === "Enter" || bypass != '') {
+            try {
+                let code = (bypass != '') ? bypass : promoCode;
+                let res = await checkVoucherCode(code);
+                if (res[0]) {
+                    setIsPromoMessageError(false);
+
+                    let _discount = new BigNumber(res[1].toString()).dividedBy(ONE_ETHER);
+                    setDiscount(_discount);
+                    setShowPromoFieldMessage("ENJOY " + (_discount.toNumber() * 100) + "% OFF with this promo code");
+                    setIsPromoFieldDisabled(true);
+                }
+                else {
+                    setIsPromoMessageError(true);
+                    setShowPromoFieldMessage("Promo code is invalid");
+                }
+            }
+            catch (err) {
+                setIsPromoMessageError(true);
+                setShowPromoFieldMessage("Something went wrong. Please try again");
+            }
+        }      
     }
 
     useEffect(() => {
@@ -74,12 +126,12 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
                                             <div className="tw-text-[0.78em]">
                                                 <p className="font-size-130 neo font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ mintQuantity.toString() } x OWNCHAIN Node Key</p>
                                             </div>
-                                            <p className="text-white tw-leading-[18px] neo-ultlight mb-0">{ price } ETH per node key</p>
+                                            <p className="text-white tw-leading-[18px] neo-ultlight mb-0">{ price.toString() } ETH per node key</p>
                                         </div>
 
                                         <div>
                                             <div className="tw-text-[0.78em]">
-                                                <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ (mintQuantity.multipliedBy(new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE.toString()))).toString() } ETH</p>
+                                                <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ mintQuantity.multipliedBy(price).toString() } ETH</p>
                                             </div>
                                         </div>
                                     </div>
@@ -87,10 +139,33 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
                                     <div className="w-100 tw-bg-[#6a81a1] tw-h-[1px] mb-3"></div>
 
                                     <div className="d-flex justify-content-between mb-3">
-                                        <div className="tw-text-[0.78em]">
-                                            <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">+ Add promo code</p>
+                                        <div className="tw-text-[0.78em]" onClick={() => setShowPromoField(!showPromoField)}>
+                                            <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">
+                                            {showPromoField ? "- Hide promo code" : "+ Add promo code"}
+                                            </p>
                                         </div>
                                     </div>
+
+                                    {showPromoField && (
+                                        <div className="justify-content-between align-items-center mb-3">
+                                            <input
+                                                disabled={isPromoFieldDisabled}
+                                                value={promoCode}
+                                                onChange={(e) => setPromoCode(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    enterVoucherCode(e);
+                                                }}
+                                                type="text"
+                                                className={`form-control font-size-90 w-full ${
+                                                    isPromoFieldDisabled ? "bg-gray-300 text-gray-600" : ""
+                                                }`}
+                                                placeholder="Enter promo code"
+                                            />
+                                            {showPromoFieldMessage !== "" && (
+                                                <p className={`${isPromoMessageError ? 'text-danger' : 'text-success' } mt-2`}>{showPromoFieldMessage}</p>
+                                            )}
+                                        </div>
+                                    )}
 
                                     <div className="w-100 tw-bg-[#6a81a1] tw-h-[1px] mb-3"></div>
 
@@ -103,7 +178,14 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
 
                                         <div>
                                             <div className="tw-text-[0.78em]">
-                                                <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ (mintQuantity.multipliedBy(new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE.toString()))).toString() } ETH</p>
+                                                <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">
+                                                    {
+                                                        discount.gt(0) ? `${(mintQuantity.multipliedBy(price.minus(discount.multipliedBy(price)))).toString()} ETH ` : ''
+                                                    }
+                                                    <span style={{ textDecoration: discount.gt(0) ? 'line-through' : 'none' }}>
+                                                        {(mintQuantity.multipliedBy(new BigNumber(price))).toString()} ETH
+                                                    </span>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -130,7 +212,7 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
                                                 <a className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">{mintLoadingMessage}</a>
                                                 :
                                             (nodeKeyBalance == 0) ? 
-                                                <a onClick={() => sendMintTransaction(mintQuantity)} className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Mint { mintQuantity.toString() } Node Key NFT</a>
+                                                <a onClick={() => sendMintTransaction(mintQuantity, discount, promoCode)} className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Mint { mintQuantity.toString() } Node Key NFT</a>
                                             : 
                                                 <a className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">You already have { nodeKeyBalance.toString() } Node Key NFT</a>
                                         }

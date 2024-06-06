@@ -1,9 +1,18 @@
 import { Modal } from 'react-bootstrap'
 import {useEffect, useState} from "react";
 import axios from 'axios';
-import {useHistory} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 
 function Home({connectWallet, address}) {
+    // Get the location object from React Router
+    const location = useLocation();
+    
+    // Create a URLSearchParams instance from the location's search string
+    const queryParams = new URLSearchParams(location.search);
+    
+    // Get the value of the 'code' query parameter
+    const code = queryParams.get('code');
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -14,7 +23,8 @@ function Home({connectWallet, address}) {
 
     useEffect(() => {
         if (address) {
-            history.push('/mint-node-key-nft');
+            if (code !== null) history.push('/mint-node-key-nft?code=' + code);
+            else history.push('/mint-node-key-nft');
         }
     }, [address, history]);
 

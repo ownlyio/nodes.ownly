@@ -13,6 +13,8 @@ import BigNumber from 'bignumber.js';
 import axios from 'axios';
 
 function App() {
+    const ONE_ETHER = new BigNumber(10 ** 18);
+
     const [inputsValues, setInputsValues] = useState({
         email: '',
         showModalSuccess: false,
@@ -94,7 +96,7 @@ function App() {
         }];
 
         const provider = new ethers.BrowserProvider(window.ethereum)
-        const contract = new ethers.Contract("0xca31cb3bd5eb3e6466cd4ed04950346200e1ed6b", abi, provider);
+        const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, provider);
 
         const data = await contract.getPurchasedKeys(address);
         setNodeKeyBalance(parseInt(data.toString()));
@@ -102,6 +104,55 @@ function App() {
             setPreSaleTxnHash('');
             setTestnetNodeKeyTxnHash('');
         }
+    };
+
+    const checkVoucherCode = async (voucher) => {
+        const abi = [{
+            "inputs":[
+                {
+                    "internalType":"string",
+                    "name":"voucher",
+                    "type":"string"
+                }
+            ],
+            "name":"getVoucher",
+            "outputs":[
+                {
+                    "internalType":"bool",
+                    "name":"isActive",
+                    "type":"bool"
+                },
+                {
+                    "internalType":"uint256",
+                    "name":"discount",
+                    "type":"uint256"
+                },
+                {
+                    "internalType":"bool",
+                    "name":"isVoucherFromInfluencer",
+                    "type":"bool"
+                },
+                {
+                    "internalType":"address",
+                    "name":"influencerReceiverWallet",
+                    "type":"address"
+                },
+                {
+                    "internalType":"uint256",
+                    "name":"influencerPercentage",
+                    "type":"uint256"
+                }
+            ],
+            "stateMutability":"view",
+            "type":"function"
+        }];
+
+        const provider = new ethers.BrowserProvider(window.ethereum)
+        const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, provider);
+
+        const data = await contract.getVoucher(voucher);
+
+        return data;
     };
 
     const checkNetwork = async () => {
@@ -129,55 +180,66 @@ function App() {
         }
     };
 
-    const sendMintTransaction = async (amount) => {
+    const sendMintTransaction = async (amount, discount, voucherCode = '') => {
         setMintLoadingMessage('Approve transaction from your wallet...');
-        const abi = [{
-            "inputs":[
-                {
-                    "internalType":"uint256",
-                    "name":"amount",
-                    "type":"uint256"
-                }
-            ],
-            "name":"buyNodeKey",
-            "outputs":[
-                
-            ],
-            "stateMutability":"payable",
-            "type":"function"
-        }];
-        
-        /*
-        const abi = [{
-            "inputs":[
-                {
-                    "internalType":"uint256",
-                    "name":"amount",
-                    "type":"uint256"
-                },
-                {
-                    "internalType":"string",
-                    "name":"voucher",
-                    "type":"string"
-                }
-            ],
-            "name":"buyNodeKey",
-            "outputs":[
-                
-            ],
-            "stateMutability":"payable",
-            "type":"function"
-        }]
-        */
-        
+
+        let abi
+        if (voucherCode == '') {
+            abi = [{
+                "inputs":[
+                    {
+                        "internalType":"uint256",
+                        "name":"amount",
+                        "type":"uint256"
+                    }
+                ],
+                "name":"buyNodeKey",
+                "outputs":[
+                    
+                ],
+                "stateMutability":"payable",
+                "type":"function"
+            }];
+        }
+        else {
+            abi = [{
+                "inputs":[
+                    {
+                        "internalType":"uint256",
+                        "name":"amount",
+                        "type":"uint256"
+                    },
+                    {
+                        "internalType":"string",
+                        "name":"voucher",
+                        "type":"string"
+                    }
+                ],
+                "name":"buyNodeKey",
+                "outputs":[
+                    
+                ],
+                "stateMutability":"payable",
+                "type":"function"
+            }]
+        }
+
         try {
             const provider = new ethers.BrowserProvider(window.ethereum)
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, signer );
+            
+            let value = new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE).multipliedBy(ONE_ETHER).multipliedBy(amount);
+            let tx;
 
-            let value = new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE.toString()).multipliedBy(new BigNumber("10").pow(new BigNumber(18))).multipliedBy(amount);
-            const tx = await contract.buyNodeKey(amount.toString(), { value: value.toString() });
-
+            if (voucherCode == '') {
+                tx = await contract.buyNodeKey(amount.toString(), { value: value.toString() });
+            }
+            else {
+                value = value.minus(value.multipliedBy(discount));
+                tx = await contract.buyNodeKey(amount.toString(), voucherCode, { value: value.toString() });
+            }
+            
             setMintLoadingMessage('Purchasing key...');
             await tx.wait();
             setPreSaleTxnHash(tx.hash);
@@ -244,6 +306,7 @@ function App() {
                                 preSaleTxnHash={preSaleTxnHash}
                                 testnetNodeKeyTxnHash={testnetNodeKeyTxnHash}
                                 sendMintTransaction={sendMintTransaction}
+                                checkVoucherCode={checkVoucherCode}
                                 showRequestError={showRequestError}
                                 address={address}
                             />
