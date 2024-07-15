@@ -1,14 +1,59 @@
 import { Modal } from 'react-bootstrap'
 import {useEffect, useState} from "react";
-import axios from 'axios';
+import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
+import axios from 'axios';
 import {useHistory, useLocation} from "react-router-dom";
 
 // images
 
 function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, testnetNodeKeyTxnHash, sendMintTransaction, checkVoucherCode, showRequestError, address}) {
-    const price = new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE);
+    
+    // add a function that fetches the price of the node key from the contract currentTier()
+    const provider = new ethers.JsonRpcProvider("https://arb-mainnet.g.alchemy.com/v2/a33_YDWIyUfh3HG7L-yoIJcJ2gdfvJuS");
+    const abi = [{
+        "inputs":[
+            
+        ],
+        "name":"currentTier",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"tierLevel",
+                "type":"uint256"
+            },
+            {
+                "internalType":"uint256",
+                "name":"price",
+                "type":"uint256"
+            },
+            {
+                "internalType":"uint256",
+                "name":"remainingItems",
+                "type":"uint256"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    }];
+    const contract = new ethers.Contract("0xfa42c0ebd3a3112260dfc5d925065c0454b08f77", abi, provider);
+    
+
+    const [currentTier, setCurrentTier] = useState("0");
+    const [currentPrice, setCurrentPrice] = useState("0");
+    const [remainingKeysAtCurrentTier, setRemainingKeysAtCurrentTier] = useState("0");
+
+    useEffect(async () => {
+        const data = await contract.currentTier();
+        setCurrentTier(data[0].toString());
+        setCurrentPrice(data[1].toString());
+        setRemainingKeysAtCurrentTier(data[2].toString());
+
+    }, [])
+
+
     const ONE_ETHER = new BigNumber(10 ** 18);
+    const price = new BigNumber(currentPrice).div(ONE_ETHER);
     const [mintQuantity, setMintQuantity] = useState(new BigNumber(1));
     const history = useHistory();
     const [showPromoField, setShowPromoField] = useState(false);
@@ -42,7 +87,7 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
     }
 
     const increment = () => {
-        setMintQuantity(mintQuantity.plus(new BigNumber(1)));
+        if (mintQuantity < Number(remainingKeysAtCurrentTier)) setMintQuantity(mintQuantity.plus(new BigNumber(1)));
     }
 
     const enterVoucherCode = async (e, bypass = '') => {
@@ -124,7 +169,7 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
                                     <div className="d-flex justify-content-between align-items-center mb-3">
                                         <div>
                                             <div className="tw-text-[0.78em]">
-                                                <p className="font-size-130 neo font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ mintQuantity.toString() } x OWNCHAIN Node Key</p>
+                                                <p className="font-size-130 neo font-size-sm-140 font-size-lg-170 text-white line-height-100 mb-0">{ mintQuantity.toString() } x OWNCHAIN Node Key (Tier {currentTier} - {remainingKeysAtCurrentTier} keys left) </p>
                                             </div>
                                             <p className="text-white tw-leading-[18px] neo-ultlight mb-0">{ price.toString() } ETH per node key</p>
                                         </div>
@@ -197,8 +242,8 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
                                                     <>
                                                         <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0">Please take note of your transaction receipt before leaving the page:</p>
                                                         <br />
-                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Presale purchase transaction</b>: {process.env.REACT_APP_MAIN_EXPLORER_URL}tx/{ preSaleTxnHash }</p>
-                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Testnet Nodekey mint transaction</b>: {process.env.REACT_APP_ARB_SEPOLIA_EXPLORER_URL}tx/{ testnetNodeKeyTxnHash }</p>
+                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Presale purchase transaction</b>: https://arbiscan.io/tx/{ preSaleTxnHash }</p>
+                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Testnet Nodekey mint transaction</b>: https://sepolia.arbiscan.io/tx/{ testnetNodeKeyTxnHash }</p>
                                                     </>
                                                 :
                                                     <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0">Minting Address: { address }</p>
@@ -212,7 +257,7 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
                                                 <a className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">{mintLoadingMessage}</a>
                                                 :
                                             (nodeKeyBalance == 0) ? 
-                                                <a onClick={() => sendMintTransaction(mintQuantity, discount, promoCode)} className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Mint { mintQuantity.toString() } Node Key NFT</a>
+                                                <a onClick={() => sendMintTransaction(price.toString(), mintQuantity, discount, promoCode)} className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">Mint { mintQuantity.toString() } Node Key NFT</a>
                                             : 
                                                 <a className="btn btn-custom-1 font-size-sm-120 tw-rounded-[15px] neo-regular w-100 px-5 py-3">You already have { nodeKeyBalance.toString() } Node Key NFT</a>
                                         }

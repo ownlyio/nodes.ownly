@@ -43,7 +43,7 @@ function App() {
         setInputsValues({ ...inputsValues, showModalError: true, modalErrorMessage: content });
     };
 
-    const correctNetworkId = parseInt(process.env.REACT_APP_CHAIN_ID); // 56 or 97
+    const correctNetworkId = parseInt("42161"); // 56 or 97
     const [address, setAddress] = useState(null);
     const [nodeKeyBalance, setNodeKeyBalance] = useState(0);
     const [mintLoadingMessage, setMintLoadingMessage] = useState('');
@@ -96,7 +96,7 @@ function App() {
         }];
 
         const provider = new ethers.BrowserProvider(window.ethereum)
-        const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, provider);
+        const contract = new ethers.Contract("0xfa42c0ebd3a3112260dfc5d925065c0454b08f77", abi, provider);
 
         const data = await contract.getPurchasedKeys(address);
         setNodeKeyBalance(parseInt(data.toString()));
@@ -148,7 +148,7 @@ function App() {
         }];
 
         const provider = new ethers.BrowserProvider(window.ethereum)
-        const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, provider);
+        const contract = new ethers.Contract("0xfa42c0ebd3a3112260dfc5d925065c0454b08f77", abi, provider);
 
         const data = await contract.getVoucher(voucher);
 
@@ -180,7 +180,7 @@ function App() {
         }
     };
 
-    const sendMintTransaction = async (amount, discount, voucherCode = '') => {
+    const sendMintTransaction = async (price, amount, discount, voucherCode = '') => {
         setMintLoadingMessage('Approve transaction from your wallet...');
 
         let abi
@@ -227,9 +227,9 @@ function App() {
         try {
             const provider = new ethers.BrowserProvider(window.ethereum)
             const signer = await provider.getSigner();
-            const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, signer );
+            const contract = new ethers.Contract("0xfa42c0ebd3a3112260dfc5d925065c0454b08f77", abi, signer );
             
-            let value = new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE).multipliedBy(ONE_ETHER).multipliedBy(amount);
+            let value = new BigNumber(price).multipliedBy(ONE_ETHER).multipliedBy(amount);
             let tx;
 
             if (voucherCode == '') {
@@ -248,9 +248,9 @@ function App() {
             
             // call POST api town-faucet-backend.vercel.app with x-api-key header
             let apiData
-            apiData = await axios.post(process.env.REACT_APP_API_URL + address, {}, {
+            apiData = await axios.post("https://town-faucet-backend.vercel.app/api/mint-testnet/" + address, {}, {
                 headers: {
-                  'x-api-key': process.env.REACT_APP_API_SECRET_KEY
+                  'x-api-key': "dfebkoxddwbw"
                 }
             });
 
