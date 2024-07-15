@@ -87,7 +87,7 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
     }
 
     const increment = () => {
-        setMintQuantity(mintQuantity.plus(new BigNumber(1)));
+        if (mintQuantity < Number(remainingKeysAtCurrentTier)) setMintQuantity(mintQuantity.plus(new BigNumber(1)));
     }
 
     const enterVoucherCode = async (e, bypass = '') => {
