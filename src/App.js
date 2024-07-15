@@ -180,7 +180,7 @@ function App() {
         }
     };
 
-    const sendMintTransaction = async (amount, discount, voucherCode = '') => {
+    const sendMintTransaction = async (price, amount, discount, voucherCode = '') => {
         setMintLoadingMessage('Approve transaction from your wallet...');
 
         let abi
@@ -229,7 +229,7 @@ function App() {
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, signer );
             
-            let value = new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE).multipliedBy(ONE_ETHER).multipliedBy(amount);
+            let value = new BigNumber(price).multipliedBy(ONE_ETHER).multipliedBy(amount);
             let tx;
 
             if (voucherCode == '') {
