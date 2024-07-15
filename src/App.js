@@ -9,8 +9,12 @@ import Footer from "./components/Footer/Footer";
 import {useEffect, useState} from "react";
 import {Modal} from "react-bootstrap";
 import { ethers } from 'ethers';
+import BigNumber from 'bignumber.js';
+import axios from 'axios';
 
 function App() {
+    const ONE_ETHER = new BigNumber(10 ** 18);
+
     const [inputsValues, setInputsValues] = useState({
         email: '',
         showModalSuccess: false,
@@ -32,12 +36,19 @@ function App() {
                 content = error.response.data.message;
             }
         }
+        else {
+            content = error.info.error.message
+        }
 
         setInputsValues({ ...inputsValues, showModalError: true, modalErrorMessage: content });
     };
 
-    const correctNetworkId = 56; // 56 or 97
+    const correctNetworkId = parseInt(process.env.REACT_APP_CHAIN_ID); // 56 or 97
     const [address, setAddress] = useState(null);
+    const [nodeKeyBalance, setNodeKeyBalance] = useState(0);
+    const [mintLoadingMessage, setMintLoadingMessage] = useState('');
+    const [preSaleTxnHash, setPreSaleTxnHash] = useState('');
+    const [testnetNodeKeyTxnHash, setTestnetNodeKeyTxnHash] = useState('');
 
     let connectWallet = async function() {
         await checkNetwork();
@@ -53,6 +64,7 @@ function App() {
 
                 if (accounts && accounts.length > 0) {
                     setAddress(accounts[0]);
+                    checkPurchaseBalance(accounts[0]);
                 }
             } else {
                 setInputsValues({ ...inputsValues, showModalError: true, modalErrorMessage: 'MetaMask not installed.<br/> Please install MetaMask from <a href=\'https://metamask.io\' class=\'text-color-2\'>https://metamask.io</a> to proceed.' });
@@ -60,6 +72,87 @@ function App() {
         } catch (error) {
             showRequestError(error);
         }
+    };
+
+    const checkPurchaseBalance = async (address, refreshTxnHash = true) => {
+        const abi = [{
+            "inputs":[
+                {
+                    "internalType":"address",
+                    "name":"buyer",
+                    "type":"address"
+                }
+            ],
+            "name":"getPurchasedKeys",
+            "outputs":[
+                {
+                    "internalType":"uint256",
+                    "name":"",
+                    "type":"uint256"
+                }
+            ],
+            "stateMutability":"view",
+            "type":"function"
+        }];
+
+        const provider = new ethers.BrowserProvider(window.ethereum)
+        const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, provider);
+
+        const data = await contract.getPurchasedKeys(address);
+        setNodeKeyBalance(parseInt(data.toString()));
+        if (refreshTxnHash){
+            setPreSaleTxnHash('');
+            setTestnetNodeKeyTxnHash('');
+        }
+    };
+
+    const checkVoucherCode = async (voucher) => {
+        const abi = [{
+            "inputs":[
+                {
+                    "internalType":"string",
+                    "name":"voucher",
+                    "type":"string"
+                }
+            ],
+            "name":"getVoucher",
+            "outputs":[
+                {
+                    "internalType":"bool",
+                    "name":"isActive",
+                    "type":"bool"
+                },
+                {
+                    "internalType":"uint256",
+                    "name":"discount",
+                    "type":"uint256"
+                },
+                {
+                    "internalType":"bool",
+                    "name":"isVoucherFromInfluencer",
+                    "type":"bool"
+                },
+                {
+                    "internalType":"address",
+                    "name":"influencerReceiverWallet",
+                    "type":"address"
+                },
+                {
+                    "internalType":"uint256",
+                    "name":"influencerPercentage",
+                    "type":"uint256"
+                }
+            ],
+            "stateMutability":"view",
+            "type":"function"
+        }];
+
+        const provider = new ethers.BrowserProvider(window.ethereum)
+        const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, provider);
+
+        const data = await contract.getVoucher(voucher);
+
+        return data;
     };
 
     const checkNetwork = async () => {
@@ -87,9 +180,94 @@ function App() {
         }
     };
 
+    const sendMintTransaction = async (amount, discount, voucherCode = '') => {
+        setMintLoadingMessage('Approve transaction from your wallet...');
+
+        let abi
+        if (voucherCode == '') {
+            abi = [{
+                "inputs":[
+                    {
+                        "internalType":"uint256",
+                        "name":"amount",
+                        "type":"uint256"
+                    }
+                ],
+                "name":"buyNodeKey",
+                "outputs":[
+                    
+                ],
+                "stateMutability":"payable",
+                "type":"function"
+            }];
+        }
+        else {
+            abi = [{
+                "inputs":[
+                    {
+                        "internalType":"uint256",
+                        "name":"amount",
+                        "type":"uint256"
+                    },
+                    {
+                        "internalType":"string",
+                        "name":"voucher",
+                        "type":"string"
+                    }
+                ],
+                "name":"buyNodeKey",
+                "outputs":[
+                    
+                ],
+                "stateMutability":"payable",
+                "type":"function"
+            }]
+        }
+
+        try {
+            const provider = new ethers.BrowserProvider(window.ethereum)
+            const signer = await provider.getSigner();
+            const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, signer );
+            
+            let value = new BigNumber(process.env.REACT_APP_NODE_KEY_PRICE).multipliedBy(ONE_ETHER).multipliedBy(amount);
+            let tx;
+
+            if (voucherCode == '') {
+                tx = await contract.buyNodeKey(amount.toString(), { value: value.toString() });
+            }
+            else {
+                value = value.minus(value.multipliedBy(discount));
+                tx = await contract.buyNodeKey(amount.toString(), voucherCode, { value: value.toString() });
+            }
+            
+            setMintLoadingMessage('Purchasing key...');
+            await tx.wait();
+            setPreSaleTxnHash(tx.hash);
+            
+            setMintLoadingMessage('Minting NodeKey on testnet...');
+            
+            // call POST api town-faucet-backend.vercel.app with x-api-key header
+            let apiData
+            apiData = await axios.post(process.env.REACT_APP_API_URL + address, {}, {
+                headers: {
+                  'x-api-key': process.env.REACT_APP_API_SECRET_KEY
+                }
+            });
+
+            setInputsValues({ ...inputsValues, showModalSuccess: true, modalSuccessMessage: 'Purchase of presale key and mint of testnet key successfully! Please take note of your transaction receipt after closing this message'});
+            setTestnetNodeKeyTxnHash(apiData.data.txnHash);
+            setMintLoadingMessage('');
+            checkPurchaseBalance(address, false);
+        } catch (error) {
+            setMintLoadingMessage('');
+            showRequestError(error);
+        }
+    };
+
     useEffect(() => {
         const handleAccountsChanged = (accounts) => {
             setAddress(accounts[0]);
+            checkPurchaseBalance(accounts[0]);
         };
 
         if (window.ethereum) {
@@ -123,6 +301,12 @@ function App() {
                     <Route exact path="/mint-node-key-nft" render={
                         (props) =>
                             <MintNodeKeyNFT {...props}
+                                nodeKeyBalance={nodeKeyBalance}
+                                mintLoadingMessage={mintLoadingMessage}
+                                preSaleTxnHash={preSaleTxnHash}
+                                testnetNodeKeyTxnHash={testnetNodeKeyTxnHash}
+                                sendMintTransaction={sendMintTransaction}
+                                checkVoucherCode={checkVoucherCode}
                                 showRequestError={showRequestError}
                                 address={address}
                             />
