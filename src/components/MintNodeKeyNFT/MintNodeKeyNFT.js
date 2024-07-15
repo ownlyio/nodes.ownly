@@ -10,7 +10,7 @@ import {useHistory, useLocation} from "react-router-dom";
 function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, testnetNodeKeyTxnHash, sendMintTransaction, checkVoucherCode, showRequestError, address}) {
     
     // add a function that fetches the price of the node key from the contract currentTier()
-    const provider = new ethers.JsonRpcProvider(process.env.REACT_APP_ARBITRUM_RPC);
+    const provider = new ethers.JsonRpcProvider("https://arb-mainnet.g.alchemy.com/v2/a33_YDWIyUfh3HG7L-yoIJcJ2gdfvJuS");
     const abi = [{
         "inputs":[
             
@@ -36,7 +36,7 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
         "stateMutability":"view",
         "type":"function"
     }];
-    const contract = new ethers.Contract(process.env.REACT_APP_PRESALE_CONTRACT, abi, provider);
+    const contract = new ethers.Contract("0xfa42c0ebd3a3112260dfc5d925065c0454b08f77", abi, provider);
     
 
     const [currentTier, setCurrentTier] = useState("0");
@@ -242,8 +242,8 @@ function MintNodeKeyNFT({nodeKeyBalance, mintLoadingMessage, preSaleTxnHash, tes
                                                     <>
                                                         <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0">Please take note of your transaction receipt before leaving the page:</p>
                                                         <br />
-                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Presale purchase transaction</b>: {process.env.REACT_APP_MAIN_EXPLORER_URL}tx/{ preSaleTxnHash }</p>
-                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Testnet Nodekey mint transaction</b>: {process.env.REACT_APP_ARB_SEPOLIA_EXPLORER_URL}tx/{ testnetNodeKeyTxnHash }</p>
+                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Presale purchase transaction</b>: https://arbiscan.io/tx/{ preSaleTxnHash }</p>
+                                                        <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0"><b>Testnet Nodekey mint transaction</b>: https://sepolia.arbiscan.io/tx/{ testnetNodeKeyTxnHash }</p>
                                                     </>
                                                 :
                                                     <p className="font-size-130 font-size-sm-140 font-size-lg-170 text-white text-break line-height-100 mb-0">Minting Address: { address }</p>
